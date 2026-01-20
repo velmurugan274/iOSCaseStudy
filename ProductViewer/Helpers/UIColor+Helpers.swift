@@ -2,6 +2,7 @@
 //  Copyright © 2022 Target. All rights reserved.
 //
 import UIKit
+import SwiftUI
 
 extension UIColor {
     static let grayDarkest = UIColor(hex: 0x333333)
@@ -19,5 +20,11 @@ extension UIColor {
         let g = CGFloat((hex >> 08) & 0xff) / 255
         let b = CGFloat((hex >> 00) & 0xff) / 255
         self.init(red: r, green: g, blue: b, alpha: alpha)
+    }
+}
+
+extension UIColor {
+    var color : Color {
+        return Color(self)
     }
 }

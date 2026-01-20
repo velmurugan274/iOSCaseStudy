@@ -1,0 +1,105 @@
+//
+//  DealEntity+Extension.swift
+//  ProductViewer
+//
+//  Created by Velmurugan on 19/01/26.
+//  Copyright © 2026 Target. All rights reserved.
+//
+
+import UIKit
+
+extension DealEntity {
+    
+    var displayPrice: String {
+        currentPrice.displayString
+    }
+    
+    var displayRegularPrice: String? {
+        guard isOnSale else { return nil }
+        return "\(Strings.Price.regularPrefix) \(regularPrice.displayString)"
+    }
+    
+    var availabilityText: String {
+        switch availabilityStatus {
+        case .inStock:
+            return Strings.Availability.inStock
+        case .limitedStock:
+            return Strings.Availability.limitedStock
+        case .outOfStock:
+            return Strings.Availability.outOfStock
+        case .unknown:
+            return Strings.Availability.unknown
+        }
+    }
+    
+    /// Creates an attributed string for availability with aisle information
+    /// - Parameters:
+    ///   - theme: The theme to use for colors
+    /// - Returns: An attributed string with colored availability status and aisle info
+    func availabilityAttributedText(theme: ListViewThemeable) -> NSAttributedString {
+        let attributedString = NSMutableAttributedString()
+        
+        // Add availability status text with appropriate color
+        let statusColor = availabilityStatus.textColor(theme: theme)
+        let statusAttributes: [NSAttributedString.Key: Any] = [
+            .foregroundColor: statusColor,
+            .font: theme.captionFont
+        ]
+        let statusText = NSAttributedString(string: availabilityText, attributes: statusAttributes)
+        attributedString.append(statusText)
+        
+        // Add aisle info if available (only for in-stock or limited stock items)
+        if !aisle.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && (availabilityStatus == .inStock || availabilityStatus == .limitedStock) {
+            let aisleAttributes: [NSAttributedString.Key: Any] = [
+                .foregroundColor: theme.captionColor,
+                .font: theme.captionFont
+            ]
+            let aisleText = NSAttributedString(
+                string: " \(Strings.Availability.inAisle(aisle))",
+                attributes: aisleAttributes
+            )
+            attributedString.append(aisleText)
+        }
+        
+        return attributedString
+    }
+    
+    var fulfillmentText: String {
+        switch fulfillmentType {
+        case .online:
+            return Strings.Fulfillment.online
+        case .inStore:
+            return Strings.Fulfillment.inStore
+        case .shipToStore:
+            return Strings.Fulfillment.shipToStore
+        case .unknown:
+            return Strings.Fulfillment.unknown
+        }
+    }
+    
+    var discountBadgeText: String? {
+        guard let discount = discountPercentage, discount > 0 else { return nil }
+        return Strings.Price.discount(discount)
+    }
+    
+    var savingsText: String? {
+        guard let savings = savingsInCents else { return nil }
+        let amount = Double(savings) / 100
+        return Strings.Price.savings(amount)
+    }
+}
+
+extension AvailabilityStatus {
+    func textColor(theme: ListViewThemeable) -> UIColor {
+        switch self {
+        case .inStock:
+            return theme.successColor
+        case .limitedStock:
+            return theme.warningColor
+        case .outOfStock:
+            return theme.errorColor
+        case .unknown:
+            return theme.captionColor
+        }
+    }
+}
