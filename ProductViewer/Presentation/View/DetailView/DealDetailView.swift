@@ -135,24 +135,8 @@ struct DealDetailView: View {
                 .font(theme.captionFont.font)
                 .foregroundColor(theme.captionColor.color)
             
-            Text(viewModel.deal.availabilityText)
-                .font(theme.captionFont.font)
-                .foregroundColor(availabilityColor)
         }
         .padding(.horizontal, 16)
-    }
-    
-    private var availabilityColor: Color {
-        switch viewModel.deal.availabilityStatus {
-        case .inStock:
-            return theme.successColor.color
-        case .limitedStock:
-            return theme.warningColor.color
-        case .outOfStock:
-            return theme.errorColor.color
-        case .unknown:
-            return theme.captionColor.color
-        }
     }
     
     private var productDetailsSection: some View {
