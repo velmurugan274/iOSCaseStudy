@@ -69,7 +69,6 @@ enum Strings {
     enum Fulfillment {
         static let online = String(localized: "fulfillment.online")
         static let inStore = String(localized: "fulfillment.inStore")
-        static let shipToStore = String(localized: "fulfillment.shipToStore")
         static let unknown = String(localized: "fulfillment.unknown")
     }
     

@@ -83,7 +83,6 @@ public struct PriceEntity: Equatable, Hashable, Codable {
 public enum FulfillmentType: String {
     case online = "Online"
     case inStore = "In Store"
-    case shipToStore = "Ship to Store"
     case unknown
     
     public init(rawString: String) {

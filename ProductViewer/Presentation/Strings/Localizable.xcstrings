@@ -284,16 +284,6 @@
         }
       }
     },
-    "fulfillment.shipToStore" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ship to Store"
-          }
-        }
-      }
-    },
     "fulfillment.unknown" : {
       "localizations" : {
         "en" : {

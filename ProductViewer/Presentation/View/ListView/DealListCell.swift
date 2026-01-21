@@ -183,8 +183,8 @@ extension DealListCell {
         priceLabel.font = theme.priceFont
         priceLabel.textColor = theme.salePriceColor
 
-        regularPriceLabel.font = theme.strikethroughFont
-        regularPriceLabel.textColor = theme.strikethroughColor
+        regularPriceLabel.font = theme.regularPriceFont
+        regularPriceLabel.textColor = theme.regularPriceColor
 
         fulfillmentLabel.font = theme.captionFont
         fulfillmentLabel.textColor = theme.captionColor

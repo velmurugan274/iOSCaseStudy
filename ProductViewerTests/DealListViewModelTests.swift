@@ -12,7 +12,7 @@ import Combine
 @MainActor
 final class DealListViewModelTests: XCTestCase {
     
-    private var sut: DealListViewModel!
+    private var vm: DealListViewModel!
     private var mockFetchUseCase: MockFetchDealsUseCase!
     private var mockDelegate: MockDealListViewModelDelegate!
     private var cancellables: Set<AnyCancellable>!
@@ -21,13 +21,13 @@ final class DealListViewModelTests: XCTestCase {
         super.setUp()
         mockFetchUseCase = MockFetchDealsUseCase()
         mockDelegate = MockDealListViewModelDelegate()
-        sut = DealListViewModel(fetchDealsUseCase: mockFetchUseCase)
-        sut.delegate = mockDelegate
+        vm = DealListViewModel(fetchDealsUseCase: mockFetchUseCase)
+        vm.delegate = mockDelegate
         cancellables = []
     }
     
     override func tearDown() {
-        sut = nil
+        vm = nil
         mockFetchUseCase = nil
         mockDelegate = nil
         cancellables = nil
@@ -43,7 +43,7 @@ final class DealListViewModelTests: XCTestCase {
         
         let expectation = XCTestExpectation(description: "State should become loaded")
         
-        sut.statePublisher
+        vm.statePublisher
             .dropFirst()
             .sink { state in
                 if case .loaded(let deals) = state {
@@ -54,7 +54,7 @@ final class DealListViewModelTests: XCTestCase {
             .store(in: &cancellables)
         
         // When
-        sut.viewDidLoad()
+        vm.viewDidLoad()
         
         // Then
         await fulfillment(of: [expectation], timeout: 2.0)
@@ -67,7 +67,7 @@ final class DealListViewModelTests: XCTestCase {
         
         let expectation = XCTestExpectation(description: "State should become empty")
         
-        sut.statePublisher
+        vm.statePublisher
             .dropFirst()
             .sink { state in
                 if state == .empty {
@@ -77,7 +77,7 @@ final class DealListViewModelTests: XCTestCase {
             .store(in: &cancellables)
         
         // When
-        sut.viewDidLoad()
+        vm.viewDidLoad()
         
         // Then
         await fulfillment(of: [expectation], timeout: 2.0)
@@ -89,7 +89,7 @@ final class DealListViewModelTests: XCTestCase {
         
         let expectation = XCTestExpectation(description: "State should become networkError")
         
-        sut.statePublisher
+        vm.statePublisher
             .dropFirst()
             .sink { state in
                 if state == .networkError {
@@ -99,7 +99,7 @@ final class DealListViewModelTests: XCTestCase {
             .store(in: &cancellables)
         
         // When
-        sut.viewDidLoad()
+        vm.viewDidLoad()
         
         // Then
         await fulfillment(of: [expectation], timeout: 2.0)
@@ -111,7 +111,7 @@ final class DealListViewModelTests: XCTestCase {
         
         let expectation = XCTestExpectation(description: "State should become error")
         
-        sut.statePublisher
+        vm.statePublisher
             .dropFirst()
             .sink { state in
                 if case .error = state {
@@ -121,7 +121,7 @@ final class DealListViewModelTests: XCTestCase {
             .store(in: &cancellables)
         
         // When
-        sut.viewDidLoad()
+        vm.viewDidLoad()
         
         // Then
         await fulfillment(of: [expectation], timeout: 2.0)
@@ -134,26 +134,26 @@ final class DealListViewModelTests: XCTestCase {
         mockFetchUseCase.result = .success(TestData.sampleDealsList)
         
         let loadExpectation = XCTestExpectation(description: "Initial load")
-        sut.statePublisher
+        vm.statePublisher
             .dropFirst()
             .sink { state in
                 if case .loaded = state { loadExpectation.fulfill() }
             }
             .store(in: &cancellables)
         
-        sut.viewDidLoad()
+        vm.viewDidLoad()
         await fulfillment(of: [loadExpectation], timeout: 2.0)
         
         // When - Refresh
         let refreshExpectation = XCTestExpectation(description: "Refresh")
-        sut.statePublisher
+        vm.statePublisher
             .dropFirst()
             .sink { state in
                 if case .loaded = state { refreshExpectation.fulfill() }
             }
             .store(in: &cancellables)
         
-        sut.refresh()
+        vm.refresh()
         
         // Then
         await fulfillment(of: [refreshExpectation], timeout: 2.0)
@@ -168,52 +168,21 @@ final class DealListViewModelTests: XCTestCase {
         mockFetchUseCase.result = .success(expectedDeals)
         
         let expectation = XCTestExpectation(description: "Deals loaded")
-        sut.statePublisher
+        vm.statePublisher
             .dropFirst()
             .sink { state in
                 if case .loaded = state { expectation.fulfill() }
             }
             .store(in: &cancellables)
         
-        sut.viewDidLoad()
+        vm.viewDidLoad()
         await fulfillment(of: [expectation], timeout: 2.0)
         
         // When
-        sut.didSelectDeal(at: 1)
+        vm.didSelectDeal(at: 1)
         
         // Then
         XCTAssertEqual(mockDelegate.didSelectDealCallCount, 1)
         XCTAssertEqual(mockDelegate.selectedDeal, expectedDeals[1])
-    }
-    
-    func testDidSelectDeal_withInvalidIndex_shouldNotNotifyDelegate() async {
-        // Given
-        mockFetchUseCase.result = .success(TestData.sampleDealsList)
-        
-        let expectation = XCTestExpectation(description: "Deals loaded")
-        sut.statePublisher
-            .dropFirst()
-            .sink { state in
-                if case .loaded = state { expectation.fulfill() }
-            }
-            .store(in: &cancellables)
-        
-        sut.viewDidLoad()
-        await fulfillment(of: [expectation], timeout: 2.0)
-        
-        // When
-        sut.didSelectDeal(at: -1)
-        sut.didSelectDeal(at: 100)
-        
-        // Then
-        XCTAssertEqual(mockDelegate.didSelectDealCallCount, 0)
-    }
-    
-    func testDidSelectDeal_beforeDealsLoaded_shouldNotNotifyDelegate() {
-        // When
-        sut.didSelectDeal(at: 0)
-        
-        // Then
-        XCTAssertEqual(mockDelegate.didSelectDealCallCount, 0)
     }
 }

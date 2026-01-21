@@ -58,8 +58,10 @@ struct ContentUnavailableConfiguration {
 struct ContentUnavailableWrapper: View {
     let configuration: ContentUnavailableConfiguration
     let action: (() -> Void)?
-    
-    @Environment(\.theme) private var theme
+
+    private var theme: ContentUnavailableWrapperTheme {
+        ContentUnavailableWrapperTheme()
+    }
     
     var body: some View {
         if #available(iOS 17.0, *) {
@@ -79,8 +81,7 @@ struct ContentUnavailableWrapper: View {
             if let actionTitle = configuration.actionTitle, let action = action {
                 Button(actionTitle, action: action)
                     .buttonStyle(.borderedProminent)
-                    .tint(theme.colors.primary.color)
-                    
+                    .tint(theme.buttonTintColor.color)
             }
         }
     }
@@ -89,26 +90,26 @@ struct ContentUnavailableWrapper: View {
         VStack(spacing: 16) {
             Image(systemName: configuration.systemImage)
                 .font(.system(size: 56))
-                .foregroundColor(theme.colors.textTertiary.color)
+                .foregroundColor(theme.imageColor.color)
             
             Text(configuration.title)
-                .font(theme.fonts.headline2.font)
-                .foregroundColor(theme.colors.textPrimary.color)
+                .font(theme.titleFont.font)
+                .foregroundColor(theme.titleColor.color)
                 .multilineTextAlignment(.center)
             
             Text(configuration.description)
-                .font(theme.fonts.bodyMedium.font)
-                .foregroundColor(theme.colors.textSecondary.color)
+                .font(theme.descriptionFont.font)
+                .foregroundColor(theme.descriptionColor.color)
                 .multilineTextAlignment(.center)
             
             if let actionTitle = configuration.actionTitle, let action = action {
                 Button(action: action) {
                     Text(actionTitle)
-                        .font(theme.fonts.button.font)
-                        .foregroundColor(theme.colors.buttonText.color)
+                        .font(theme.buttonFont.font)
+                        .foregroundColor(theme.buttonTextColor.color)
                         .padding(.horizontal, 24)
                         .padding(.vertical, 12)
-                        .background(theme.colors.buttonBackground.color)
+                        .background(theme.buttonBackgroundColor.color)
                         .cornerRadius(8)
                 }
                 .padding(.top, 12)
@@ -116,6 +117,6 @@ struct ContentUnavailableWrapper: View {
         }
         .padding(24)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(theme.colors.background.color)
+        .background(theme.backgroundColor.color)
     }
 }

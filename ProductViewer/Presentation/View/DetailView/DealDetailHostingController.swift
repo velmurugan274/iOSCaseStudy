@@ -15,7 +15,6 @@ final class DealDetailHostingController: UIHostingController<AnyView> {
         baseTheme: Theme = ThemeManager.shared.currentTheme) {
         let view = DealDetailView(viewModel: viewModel)
             .environment(\.detailViewTheme, detailTheme)
-            .themed(baseTheme)
         super.init(rootView: AnyView(view))
     }
     

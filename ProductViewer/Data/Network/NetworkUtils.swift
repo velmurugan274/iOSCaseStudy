@@ -47,7 +47,7 @@ enum ErrorMapper {
                 if code == 404 {
                     return .notFound
                 }
-            case .networkError(let message):
+            case .networkError:
                 return .networkUnavailable
             }
         }

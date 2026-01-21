@@ -31,8 +31,6 @@ final class NetworkService : NetworkServiceProtocol {
             throw NetworkError.invalidURL
         }
         
-        logger.log("Requesting: \(url.absoluteString)")
-        
         do {
             let (data, response) = try await session.data(from: url)
             

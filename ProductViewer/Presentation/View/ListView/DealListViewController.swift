@@ -262,7 +262,6 @@ extension DealListViewController {
         contentUnavailableHostingController = nil
         
         let contentView = ContentUnavailableWrapper(configuration: configuration, action: retryAction)
-        .themed(baseTheme)
         
         let hostingController = UIHostingController(rootView: AnyView(contentView))
         hostingController.view.translatesAutoresizingMaskIntoConstraints = false
@@ -305,10 +304,7 @@ extension DealListViewController {
 
     private func handleRefreshingState() {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { [weak self] in
-            guard
-                let self,
-                case .refreshing = self.viewModel.state
-            else { return }
+            guard let self, case .refreshing = self.viewModel.state else { return }
 
             self.showRefreshing()
         }

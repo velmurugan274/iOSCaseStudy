@@ -64,23 +64,11 @@ extension DealEntity {
             return Strings.Fulfillment.online
         case .inStore:
             return Strings.Fulfillment.inStore
-        case .shipToStore:
-            return Strings.Fulfillment.shipToStore
         case .unknown:
             return Strings.Fulfillment.unknown
         }
     }
     
-    var discountBadgeText: String? {
-        guard let discount = discountPercentage, discount > 0 else { return nil }
-        return Strings.Price.discount(discount)
-    }
-    
-    var savingsText: String? {
-        guard let savings = savingsInCents else { return nil }
-        let amount = Double(savings) / 100
-        return Strings.Price.savings(amount)
-    }
 }
 
 extension AvailabilityStatus {

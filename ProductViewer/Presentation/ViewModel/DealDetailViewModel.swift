@@ -70,7 +70,6 @@ final class DealDetailViewModel: ObservableObject {
     @Published var state: DealDetailViewState = .idle
     @Published var deal: DealEntity
     @Published var quantity: Int = 0
-    @Published var showAddedToCartAlert = false
     
     private let getDealDetailUseCase: GetDealDetailUseCaseProtocol
     private var currentTask: Task<Void, Never>?
@@ -122,7 +121,6 @@ final class DealDetailViewModel: ObservableObject {
     
     func addToCart() {
         quantity = 1
-        showAddedToCartAlert = true
     }
     
     func incrementQuantity() {

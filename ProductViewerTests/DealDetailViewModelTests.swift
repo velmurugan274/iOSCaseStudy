@@ -12,14 +12,14 @@ import Combine
 @MainActor
 final class DealDetailViewModelTests: XCTestCase {
     
-    private var sut: DealDetailViewModel!
+    private var vm: DealDetailViewModel!
     private var mockGetDetailUseCase: MockGetDealDetailUseCase!
     private var cancellables: Set<AnyCancellable>!
     
     override func setUp() {
         super.setUp()
         mockGetDetailUseCase = MockGetDealDetailUseCase()
-        sut = DealDetailViewModel(
+        vm = DealDetailViewModel(
             deal: TestData.sampleDeal,
             getDealDetailUseCase: mockGetDetailUseCase
         )
@@ -27,7 +27,7 @@ final class DealDetailViewModelTests: XCTestCase {
     }
     
     override func tearDown() {
-        sut = nil
+        vm = nil
         mockGetDetailUseCase = nil
         cancellables = nil
         super.tearDown()
@@ -36,10 +36,10 @@ final class DealDetailViewModelTests: XCTestCase {
     // MARK: - Initial State
     
     func testInitialState_shouldHaveCorrectDefaults() {
-        XCTAssertEqual(sut.state, .idle)
-        XCTAssertEqual(sut.deal, TestData.sampleDeal)
-        XCTAssertEqual(sut.quantity, 0)
-        XCTAssertFalse(sut.isInCart)
+        XCTAssertEqual(vm.state, .idle)
+        XCTAssertEqual(vm.deal, TestData.sampleDeal)
+        XCTAssertEqual(vm.quantity, 0)
+        XCTAssertFalse(vm.isInCart)
     }
     
     // MARK: - Load Data
@@ -51,7 +51,7 @@ final class DealDetailViewModelTests: XCTestCase {
         
         let expectation = XCTestExpectation(description: "State should become loaded")
         
-        sut.$state
+        vm.$state
             .dropFirst()
             .sink { state in
                 if case .loaded(let deal) = state {
@@ -62,11 +62,11 @@ final class DealDetailViewModelTests: XCTestCase {
             .store(in: &cancellables)
         
         // When
-        sut.loadData()
+        vm.loadData()
         
         // Then
         await fulfillment(of: [expectation], timeout: 2.0)
-        XCTAssertEqual(sut.deal, detailedDeal)
+        XCTAssertEqual(vm.deal, detailedDeal)
         XCTAssertEqual(mockGetDetailUseCase.lastRequestedId, TestData.sampleDeal.id)
     }
     
@@ -76,7 +76,7 @@ final class DealDetailViewModelTests: XCTestCase {
         
         let expectation = XCTestExpectation(description: "State should become error")
         
-        sut.$state
+        vm.$state
             .dropFirst()
             .sink { state in
                 if case .error(let error) = state {
@@ -87,7 +87,7 @@ final class DealDetailViewModelTests: XCTestCase {
             .store(in: &cancellables)
         
         // When
-        sut.loadData()
+        vm.loadData()
         
         // Then
         await fulfillment(of: [expectation], timeout: 2.0)
@@ -99,7 +99,7 @@ final class DealDetailViewModelTests: XCTestCase {
         
         let expectation = XCTestExpectation(description: "State should become error")
         
-        sut.$state
+        vm.$state
             .dropFirst()
             .sink { state in
                 if case .error(let error) = state, case .notFound = error {
@@ -109,7 +109,7 @@ final class DealDetailViewModelTests: XCTestCase {
             .store(in: &cancellables)
         
         // When
-        sut.loadData()
+        vm.loadData()
         
         // Then
         await fulfillment(of: [expectation], timeout: 2.0)
@@ -122,28 +122,28 @@ final class DealDetailViewModelTests: XCTestCase {
         mockGetDetailUseCase.result = .failure(DomainError.networkUnavailable)
         
         let errorExpectation = XCTestExpectation(description: "Error state")
-        sut.$state
+        vm.$state
             .dropFirst()
             .sink { state in
                 if case .error = state { errorExpectation.fulfill() }
             }
             .store(in: &cancellables)
         
-        sut.loadData()
+        vm.loadData()
         await fulfillment(of: [errorExpectation], timeout: 2.0)
         
         // When - Retry succeeds
         mockGetDetailUseCase.result = .success(TestData.sampleDealOnSale)
         
         let successExpectation = XCTestExpectation(description: "Success state")
-        sut.$state
+        vm.$state
             .dropFirst()
             .sink { state in
                 if case .loaded = state { successExpectation.fulfill() }
             }
             .store(in: &cancellables)
         
-        sut.retry()
+        vm.retry()
         
         // Then
         await fulfillment(of: [successExpectation], timeout: 2.0)
@@ -154,53 +154,52 @@ final class DealDetailViewModelTests: XCTestCase {
     
     func testAddToCart_shouldSetQuantityAndShowAlert() {
         // When
-        sut.addToCart()
+        vm.addToCart()
         
         // Then
-        XCTAssertEqual(sut.quantity, 1)
-        XCTAssertTrue(sut.isInCart)
-        XCTAssertTrue(sut.showAddedToCartAlert)
+        XCTAssertEqual(vm.quantity, 1)
+        XCTAssertTrue(vm.isInCart)
     }
     
     func testIncrementQuantity_shouldRespectMaximumLimit() {
         // Given
-        sut.addToCart()
+        vm.addToCart()
         
         // When - increment to maximum (10)
         for _ in 1..<15 {
-            sut.incrementQuantity()
+            vm.incrementQuantity()
         }
         
         // Then - should cap at 10
-        XCTAssertEqual(sut.quantity, 10)
-        XCTAssertFalse(sut.canIncrement)
+        XCTAssertEqual(vm.quantity, 10)
+        XCTAssertFalse(vm.canIncrement)
     }
     
     func testDecrementQuantity_shouldRespectMinimumLimit() {
         // Given
-        sut.addToCart()
+        vm.addToCart()
         
         // When - try to decrement below 0
-        sut.decrementQuantity()
-        sut.decrementQuantity()
+        vm.decrementQuantity()
+        vm.decrementQuantity()
         
         // Then - should stop at 0
-        XCTAssertEqual(sut.quantity, 0)
-        XCTAssertFalse(sut.canDecrement)
-        XCTAssertFalse(sut.isInCart)
+        XCTAssertEqual(vm.quantity, 0)
+        XCTAssertFalse(vm.canDecrement)
+        XCTAssertFalse(vm.isInCart)
     }
     
     func testRemoveFromCart_shouldResetQuantity() {
         // Given
-        sut.addToCart()
-        sut.incrementQuantity()
-        XCTAssertEqual(sut.quantity, 2)
+        vm.addToCart()
+        vm.incrementQuantity()
+        XCTAssertEqual(vm.quantity, 2)
         
         // When
-        sut.removeFromCart()
+        vm.removeFromCart()
         
         // Then
-        XCTAssertEqual(sut.quantity, 0)
-        XCTAssertFalse(sut.isInCart)
+        XCTAssertEqual(vm.quantity, 0)
+        XCTAssertFalse(vm.isInCart)
     }
 }

@@ -126,8 +126,8 @@ struct DealDetailView: View {
                 
                 if let regularPrice = viewModel.deal.displayRegularPrice {
                     Text(regularPrice)
-                        .font(theme.strikethroughFont.font)
-                        .foregroundColor(theme.strikethroughColor.color)
+                        .font(theme.regularPriceFont.font)
+                        .foregroundColor(theme.regularPriceColor.color)
                 }
             }
             

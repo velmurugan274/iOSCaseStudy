@@ -42,7 +42,6 @@ public final class ThemeManager: ThemeManagerProtocol, ObservableObject {
     
     public func setTheme(_ theme: Theme) {
         currentTheme = theme
-        NotificationCenter.default.post(name: .themeDidChange, object: theme)
     }
     
     // MARK: - Factory Methods
@@ -60,40 +59,15 @@ public final class ThemeManager: ThemeManagerProtocol, ObservableObject {
     }
 }
 
-// MARK: - Notification Extension
-
-public extension Notification.Name {
-    static let themeDidChange = Notification.Name("ThemeDidChangeNotification")
-}
-
 // MARK: - SwiftUI Environment Keys
-
-private struct ThemeKey: EnvironmentKey {
-    static let defaultValue: Theme = TargetTheme.shared
-}
 
 private struct DetailViewThemeKey: EnvironmentKey {
     static let defaultValue: DetailViewThemeable = DetailViewTheme()
 }
 
 public extension EnvironmentValues {
-    var theme: Theme {
-        get { self[ThemeKey.self] }
-        set { self[ThemeKey.self] = newValue }
-    }
-    
     var detailViewTheme: DetailViewThemeable {
         get { self[DetailViewThemeKey.self] }
         set { self[DetailViewThemeKey.self] = newValue }
-    }
-}
-
-// MARK: - SwiftUI View Extension
-
-public extension View {
-    func themed(_ theme: Theme = ThemeManager.shared.currentTheme) -> some View {
-        self
-            .environment(\.theme, theme)
-            .environment(\.detailViewTheme, DetailViewTheme(theme: theme))
     }
 }
