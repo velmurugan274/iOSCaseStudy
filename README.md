@@ -7,7 +7,7 @@ The focus is on architecture, performance, and real-world user experience.
 
 ## Overview
 
-The app allows users to browse Target deals, view detailed product information, and refresh data seamlessly using live API responses.
+The app allows users to browse Target deals, view detailed product information.
 
 ---
 
