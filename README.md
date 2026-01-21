@@ -36,7 +36,8 @@ The app allows users to browse Target deals, view detailed product information.
 
 Given more time, the following enhancements could be added:
 
-- Pagination or predictive loading for large deal lists  
+- Pagination or predictive loading for large deal lists
+- Additional features like search/filtering can be supported
 - More advanced offline support 
 - Improved accessibility
 - CI/CD Integrations
